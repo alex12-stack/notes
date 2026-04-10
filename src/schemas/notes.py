@@ -19,4 +19,8 @@ class Note(BaseModel):
     created_at: datetime.datetime
 
 class NotePatch(BaseModel):
-    ...
+    content: str | None
+    title: str | None
+    folder_id: int | None
+    is_public: Is_Public | None
+    created_at: datetime.datetime | None
