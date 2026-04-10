@@ -47,24 +47,24 @@ async def create_note(note:Note):
         await session.commit()
     return {"status": "OK", "data":new_folder}
 
-@router.put("/{folder_id}")
-async def edit_folder(folder_id:int, folder:Folder):
+@router.put("/{note_id}")
+async def edit_folder(note_id:int, note:Note):
     async with async_session_maker() as session:
-        await FoldersRepository(session).edit(folder,id=folder_id)
+        await NotesRepository(session).edit(note,id=note_id)
         await session.commit()
     return {"status":"OK"}
 
-@router.patch("/{folder_id}")
-async def part_edit_folder(folder_id:int, folder:FolderPatch):
+@router.patch("/{note_id}")
+async def part_edit_folder(note_id:int, note:NotePatch):
     async with async_session_maker() as session:
-        await FoldersRepository(session).edit(folder,exclude_unset=True,id=folder_id)
+        await NotesRepository(session).edit(note,exclude_unset=True,id=note_id)
         # поля, которые не передали, не учитываются
         await session.commit()
     return {"status":"OK"}
 
-@router.delete("/{folder_id}")
-async def delete_folder(folder_id:int):
+@router.delete("/{note_id}")
+async def delete_folder(note_id:int):
     async with async_session_maker() as session:
-        await FoldersRepository(session).delete(id=folder_id)
+        await NotesRepository(session).delete(id=note_id)
         await session.commit()
     return {"status":"OK"}
