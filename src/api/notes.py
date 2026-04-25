@@ -1,7 +1,5 @@
 from fastapi import Query, APIRouter
 
-from sqlalchemy import Enum
-
 from src.schemas.notes import Note, NotePatch
 
 from src.repositories.notes import NotesRepository
