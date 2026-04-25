@@ -10,6 +10,6 @@ class UserOrm(Base):
 
     id:Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
     username:Mapped[str] = mapped_column(String(30))
-    email:Mapped[str] = mapped_column(String(50))
-    password:Mapped[str] = mapped_column(String(50))
+    email:Mapped[str] = mapped_column(String(50),unique=True)
+    hashed_password:Mapped[str] = mapped_column(String(50))
     created_at: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP, default=datetime.datetime.now())
