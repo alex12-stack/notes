@@ -21,7 +21,8 @@ class BaseRepository:
 
     async def delete(self,**filter_by):
         delete_stmt = delete(self.model).filter_by(**filter_by)
-        await self.session.execute(delete_stmt)
+        res = await self.session.execute(delete_stmt)
+        return res.rowcount
 
     async def add(self, data:BaseModel):
         add_stmt = insert(self.model).values(**data.model_dump()).returning(self.model)
@@ -29,7 +30,6 @@ class BaseRepository:
         return res.scalars().one()
 
     async def edit(self, data:BaseModel, exclude_unset: bool = False, **filter_by):
-        # exclude_unset позволяет сделать так, чтобы, если пользователь что-то не передал, то поставилось значение по умолчанию
         edit_stmt = (
             update(self.model)
             .filter_by(**filter_by)

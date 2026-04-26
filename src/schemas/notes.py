@@ -1,26 +1,32 @@
 from pydantic import BaseModel, Field
-
 import datetime
-
 import enum
-
 from sqlalchemy import Enum
 
 
-class Is_Public(enum.Enum):
+class IsPublic(enum.Enum):
     Public = "public"
     Private = "private"
 
-class Note(BaseModel):
+
+
+class CreateNote(BaseModel):
     content: str
     title: str
-    folder_id: int
-    is_public: Is_Public
-    created_at: datetime.datetime
+    folder_id: int | None = None
+    is_public: IsPublic = IsPublic.Private
 
-class NotePatch(BaseModel):
-    content: str | None
-    title: str | None
-    folder_id: int | None
-    is_public: Is_Public | None
-    created_at: datetime.datetime | None
+
+class GetNotesFiltered(BaseModel):
+    content: str | None = None
+    title: str | None = None
+    is_public: IsPublic = None
+    folder_id: int | None = None
+    created_at: datetime.datetime | None = None
+
+
+class PatchNote(BaseModel):
+    title: str | None = None
+    content: str | None = None
+    folder_id: int | None = None
+    is_public: IsPublic | None = None
