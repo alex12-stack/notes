@@ -1,5 +1,5 @@
-from sqlalchemy import select, insert, update, delete
-from pydantic import BaseModel, EmailStr
+from sqlalchemy import select
+from pydantic import EmailStr
 
 from src.repositories.base import BaseRepository
 from src.models.users import UserOrm

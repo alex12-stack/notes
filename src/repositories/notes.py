@@ -8,39 +8,40 @@ class NotesRepository(BaseRepository):
 
     async def get_all(
             self,
+            owner_id,
             title,
             content,
-            owner_id,
             folder_id,
             is_public,
             created_at,
             limit,
             offset,
     ):
-        query = select(NotesOrm).filter_by(is_public=True)
+        # query = select(NotesOrm).filter_by(is_public=True)
+        query = select(NotesOrm).filter_by(owner_id=owner_id)
 
         if title:
             query = (
                 query
-                .filter(func.lower(NotesOrm.title)
-                .contains(title.strip().lower()))
+                .where(
+                    NotesOrm.title.ilike(f"%{title.strip()}%")
+                )
             )
 
         if content:
             query = (
                 query
-                .filter(func.lower(NotesOrm.content)
-                .contains(content.strip().lower()))
+                .where(
+                    NotesOrm.content.ilike(f"%{content.strip()}%")
+                )
             )
 
-        if owner_id:
-            query.filter_by(owner_id=owner_id)
 
-        if folder_id:
-            query.filter_by(folder_id=folder_id)
+        if folder_id is not None:
+            query=query.filter_by(folder_id=folder_id)
 
-        if created_at:
-            query.filter_by(created_at=created_at)
+        if created_at is not None:
+            query=query.filter_by(created_at=created_at)
 
         query = (
             query
