@@ -14,17 +14,13 @@ class FoldersRepository(BaseRepository):
             limit,
             offset,
     ):
-        query = select(self.model)
+        query = select(self.model).filter_by(owner_id=owner_id)
 
         if name:
-            query = (
-                query
-                .filter(func.lower(FoldersOrm.name)
-                .contains(name.strip().lower()))
+            query = query.where(
+                FoldersOrm.name.ilike(f"%{name.strip()}%")
             )
 
-        if owner_id:
-            query = query.filter(FoldersOrm.owner_id==owner_id)
 
         query = (
             query

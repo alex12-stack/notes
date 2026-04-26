@@ -1,9 +1,7 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
-class Folder(BaseModel):
+class CreateFolder(BaseModel):
     name: str
-    owner_id: int
 
-class FolderPatch(BaseModel):
-    name: str | None = Field(None)
-    owner_id: int | None = Field(None)
+class PatchFolder(BaseModel):
+    name: str | None = None
