@@ -17,3 +17,7 @@ class User(BaseModel):
 
 class User_With_Hashed_Password(User):
     hashed_password: str
+
+class PatchMe(BaseModel):
+    name: str | None = None
+    email: EmailStr | None = None

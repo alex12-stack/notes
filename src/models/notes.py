@@ -30,5 +30,5 @@ class NotesOrm(Base):
     updated_at:Mapped[datetime.datetime] = mapped_column(
         TIMESTAMP,
         server_default=func.now(),
-        onupdate=func.now()
+        onupdate=func.now(),
     )

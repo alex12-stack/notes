@@ -7,7 +7,7 @@ from src.db import async_session_maker
 from src.api.dependencies import UserIdDep, DBDep
 
 
-router = APIRouter(prefix="/folders")
+router = APIRouter(prefix="/folders",tags=["Папки"])
 
 @router.get("")
 async def get_folders(
