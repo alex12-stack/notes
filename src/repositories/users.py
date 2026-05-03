@@ -6,7 +6,7 @@ from src.models.users import UserOrm
 from src.schemas.users import User_With_Hashed_Password
 
 
-class UserRepository(BaseRepository):
+class UsersRepository(BaseRepository):
     model = UserOrm
 
     async def get_user_with_hashed_password(self,email:EmailStr):

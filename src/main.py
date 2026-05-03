@@ -7,17 +7,19 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
 
+from src.api.auth import router as router_auth
 from src.api.folders import router as router_folders
 # from src.api.note_access import router as router_note_access
 from src.api.notes import router as router_notes
-# from src.api.users import router as router_user
+from src.api.users import router as router_users
 
-app = FastAPI(docs_url=None)
+app = FastAPI()
 
+app.include_router(router_auth)
 app.include_router(router_folders)
 # app.include_router(router_note_access)
 app.include_router(router_notes)
-# app.include_router(router_user)
+app.include_router(router_users)
 
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui_html():

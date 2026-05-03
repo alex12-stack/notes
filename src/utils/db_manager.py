@@ -1,6 +1,6 @@
 from src.repositories.folders import FoldersRepository
 from src.repositories.users import UsersRepository
-from src.repositories.note_access import Note_Access_Repository
+from src.repositories.note_access import NoteAccessRepository
 from src.repositories.notes import NotesRepository
 
 
@@ -16,7 +16,7 @@ class DBManager:
 
         self.folders = FoldersRepository(self.session)
         self.users = UsersRepository(self.session)
-        self.note_access = Note_Access_Repository(self.session)
+        self.note_access = NoteAccessRepository(self.session)
         self.notes = NotesRepository(self.session)
 
         return self
