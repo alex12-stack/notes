@@ -13,7 +13,11 @@ async def register_user(
         db: DBDep,
 ):
     hashed_password = AuthService().hash_password(password=data.password)
-    new_user_data = UserAdd(email=data.email,hashed_password=hashed_password)
+    new_user_data = UserAdd(
+        username=data.username,
+        email=data.email,
+        hashed_password=hashed_password,
+    )
 
     await db.users.add(new_user_data)
     await db.commit()
@@ -27,7 +31,10 @@ async def login_user(
         response: Response,
         db: DBDep,
 ):
-    user = await db.users.get_user_with_hashed_password
+    user = await db.users.get_user_with_hashed_password(
+        username=data.username,
+        email=data.email,
+    )
     if not user:
         raise HTTPException(status_code=401, detail="Пользователь с таким email не зарегистрирован")
     if not AuthService().verify_password(data.password, user.hashed_password):
