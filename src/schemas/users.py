@@ -2,10 +2,12 @@ from pydantic import BaseModel, ConfigDict, EmailStr
 
 
 class UserRequestAdd(BaseModel):
+    username: str
     email: EmailStr
     password: str
 
 class UserAdd(BaseModel):
+    username: str
     email: EmailStr
     hashed_password: str
 
@@ -19,5 +21,5 @@ class User_With_Hashed_Password(User):
     hashed_password: str
 
 class PatchMe(BaseModel):
-    name: str | None = None
+    username: str | None = None
     email: EmailStr | None = None

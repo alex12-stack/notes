@@ -1,9 +1,7 @@
 from fastapi import Query, APIRouter, HTTPException
 
 from src.schemas.folders import CreateFolder, PatchFolder
-from src.repositories.folders import FoldersRepository
 from src.api.dependencies import PaginationDep
-from src.db import async_session_maker
 from src.api.dependencies import UserIdDep, DBDep
 
 
@@ -29,12 +27,15 @@ async def get_folders(
 async def create_folder(
         user_id: UserIdDep,
         db: DBDep,
-        folder: CreateFolder,
+        folder: PatchFolder,
 ):
     new_folder = await db.folders.add(
-        owner_id=user_id,
-        name=folder.name,
+        CreateFolder(
+            owner_id=user_id,
+            name=folder.name,
+        )
     )
+    await db.commit()
     return new_folder
 
 
@@ -46,11 +47,12 @@ async def patch_folder(
         db: DBDep,
 ):
     res = await db.folders.edit(
-        data=folder.model_dump(exclude_unset=True),
+        data=folder,
         id=folder_id,
         owner_id=user_id,
     )
-    return res
+    await db.commit()
+    return {"status":"updated"}
 
 @router.delete("/{folder_id}")
 async def delete_folder(
@@ -64,4 +66,5 @@ async def delete_folder(
     )
     if res == 0:
         raise HTTPException(status_code=404,detail="Такой папки нет или у вас нет доступа")
+    await db.commit()
     return {"status":"deleted"}

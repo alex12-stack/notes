@@ -9,6 +9,8 @@ class BaseRepository:
 
     async def get_all(self,*args,**kwargs):
         query = select(self.model)
+        if kwargs:
+            query=query.filter_by(**kwargs)
         res = await self.session.scalars(query)
         # result = await self.session.execute(query)
         # return result.scalars().all()
