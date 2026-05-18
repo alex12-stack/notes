@@ -1,4 +1,4 @@
-from sqlalchemy import select, func
+from sqlalchemy import select
 
 from src.repositories.base import BaseRepository
 from src.models.notes import NotesOrm
@@ -9,36 +9,32 @@ class NotesRepository(BaseRepository):
     async def get_all(
             self,
             owner_id,
-            title,
-            content,
-            folder_id,
-            is_public,
-            created_at,
-            limit,
-            offset,
+            title=None,
+            content=None,
+            folder_id=None,
+            is_public=None,
+            created_at=None,
+            limit=5,
+            offset=0,
     ):
-        # query = select(NotesOrm).filter_by(is_public=True)
-        query = select(NotesOrm).filter_by(owner_id=owner_id)
+        query = select(self.model).filter_by(owner_id=owner_id)
 
         if title:
-            query = (
-                query
-                .where(
-                    NotesOrm.title.ilike(f"%{title.strip()}%")
-                )
+            query = query.where(
+                    self.model.title.ilike(f"%{title.strip()}%")
             )
 
         if content:
-            query = (
-                query
-                .where(
-                    NotesOrm.content.ilike(f"%{content.strip()}%")
-                )
+            query =query.where(
+                    self.model.content.ilike(f"%{content.strip()}%")
             )
 
 
         if folder_id is not None:
             query=query.filter_by(folder_id=folder_id)
+
+        if is_public is not None:
+            query = query.filter_by(is_public=is_public)
 
         if created_at is not None:
             query=query.filter_by(created_at=created_at)

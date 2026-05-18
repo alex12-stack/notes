@@ -13,7 +13,7 @@ class Role(enum.Enum):
 
 
 class NoteAccessOrm(Base):
-    __tablename__ = "Note Access"
+    __tablename__ = "NoteAccess"
 
     id:Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
     note_id:Mapped[int] = mapped_column(ForeignKey("Notes.id"))

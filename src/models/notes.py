@@ -1,15 +1,12 @@
+from typing import Literal
+
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import String, Text, TIMESTAMP ,ForeignKey, Enum, func
+from sqlalchemy import String, Text, TIMESTAMP ,ForeignKey, func
 
 import datetime
 
 from src.db import Base
 
-import enum
-
-class IsPublic(enum.Enum):
-    Public="public"
-    Private="private"
 
 
 class NotesOrm(Base):
@@ -18,9 +15,12 @@ class NotesOrm(Base):
     id:Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title:Mapped[str] = mapped_column(String(100))
     content:Mapped[str] = mapped_column(Text)
-    is_public:Mapped[IsPublic] = mapped_column(Enum(IsPublic))
+    is_public:Mapped[bool] = mapped_column(default=False)
     owner_id:Mapped[int] = mapped_column(ForeignKey("Users.id"))
-    folder_id:Mapped[int] = mapped_column(ForeignKey("Folders.id"))
+    folder_id:Mapped[int | None] = mapped_column(
+        ForeignKey("Folders.id"),
+        nullable=True,
+    )
 
     created_at:Mapped[datetime.datetime] = mapped_column(
         TIMESTAMP,

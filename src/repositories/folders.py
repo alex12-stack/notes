@@ -1,4 +1,4 @@
-from sqlalchemy import select, func
+from sqlalchemy import select
 
 from src.repositories.base import BaseRepository
 from src.models.folders import FoldersOrm
@@ -9,10 +9,10 @@ class FoldersRepository(BaseRepository):
 
     async def get_all(
             self,
-            name,
             owner_id,
-            limit,
-            offset,
+            name=None,
+            limit=5,
+            offset=0,
     ):
         query = select(self.model).where(self.model.owner_id == owner_id)
 

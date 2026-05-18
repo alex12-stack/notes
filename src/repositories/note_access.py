@@ -6,3 +6,4 @@ class NoteAccessRepository(BaseRepository):
     model = NoteAccessOrm
 
 
+

@@ -8,6 +8,9 @@ import uvicorn
 
 import sys
 from pathlib import Path
+
+from src.config import settings
+
 sys.path.append(str(Path(__file__).parent.parent))
 
 from src.init import redis_manager
@@ -25,7 +28,7 @@ async def lifespan(app: FastAPI):
     yield
     await redis_manager.close()
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 app.include_router(router_auth)
 app.include_router(router_folders)

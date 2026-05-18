@@ -1,14 +1,14 @@
 import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class CreateFolder(BaseModel):
-    name: str
+    name: str = Field(min_length=1, max_length=30)
     owner_id: int
 
 class PatchFolder(BaseModel):
-    name: str
+    name: str = Field(min_length=1, max_length=30)
 
 
 class Folder(CreateFolder):

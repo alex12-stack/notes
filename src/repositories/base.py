@@ -12,8 +12,6 @@ class BaseRepository:
         if kwargs:
             query=query.filter_by(**kwargs)
         res = await self.session.scalars(query)
-        # result = await self.session.execute(query)
-        # return result.scalars().all()
         return res.all()
 
     async def get_one_or_none(self,**filter_by):
@@ -27,7 +25,11 @@ class BaseRepository:
         return res.rowcount
 
     async def add(self, data:BaseModel):
-        add_stmt = insert(self.model).values(**data.model_dump()).returning(self.model)
+        add_stmt = (
+            insert(self.model)
+            .values(**data.model_dump())
+            .returning(self.model)
+        )
         res = await self.session.execute(add_stmt)
         return res.scalars().one()
 
@@ -37,7 +39,8 @@ class BaseRepository:
             .filter_by(**filter_by)
             .values(**data.model_dump(exclude_unset=exclude_unset))
         )
-        await self.session.execute(edit_stmt)
+        res = await self.session.execute(edit_stmt)
+        return res.rowcount
 
 
 
