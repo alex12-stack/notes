@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, update
 
 from src.repositories.base import BaseRepository
 from src.models.notes import NotesOrm
@@ -48,4 +48,23 @@ class NotesRepository(BaseRepository):
         res = await self.session.execute(query)
 
         return res.scalars().all()
+
+
+    async def detach_from_folder(
+            self,
+            folder_id: int,
+            owner_id: int,
+    ):
+        query = (
+            update(self.model)
+            .where(
+                self.model.folder_id == folder_id,
+                self.model.owner_id == owner_id,
+            )
+            .values(folder_id=None)
+        )
+
+        res = await self.session.execute(query)
+
+        return res.rowcount
 

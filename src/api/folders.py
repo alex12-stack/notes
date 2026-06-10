@@ -57,17 +57,38 @@ async def patch_folder(
     await db.commit()
     return {"status": "updated"}
 
+
+
 @router.delete("/{folder_id}")
 async def delete_folder(
-        folder_id:int,
+        folder_id: int,
         user_id: UserIdDep,
         db: DBDep,
 ):
-    res = await db.folders.delete(
+    folder = await db.folders.get_one_or_none(
         owner_id=user_id,
         id=folder_id,
     )
-    if res == 0:
-        raise HTTPException(status_code=404,detail="Такой папки нет или у вас нет доступа")
+
+    if not folder:
+        raise HTTPException(
+            status_code=404,
+            detail="Такой папки нет или у вас нет доступа",
+        )
+
+    moved_notes_count = await db.notes.detach_from_folder(
+        folder_id=folder_id,
+        owner_id=user_id,
+    )
+
+    await db.folders.delete(
+        owner_id=user_id,
+        id=folder_id,
+    )
+
     await db.commit()
-    return {"status":"deleted"}
+
+    return {
+        "status": "deleted",
+        "moved_notes_count": moved_notes_count,
+    }

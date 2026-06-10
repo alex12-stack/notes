@@ -1,55 +1,58 @@
-from fastapi import APIRouter,Depends,HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
-from src.api.dependencies import PaginationDep
-from src.api.dependencies import DBDep
-from src.api.dependencies import UserIdDep
-from src.schemas.notes import GetNotesFiltered, CreateNote, CreateNoteDB, PatchNote, Note
+from src.api.dependencies import DBDep, PaginationDep, UserIdDep
+from src.schemas.notes import CreateNote, CreateNoteDB, GetNotesFiltered, Note, PatchNote
 
-router = APIRouter(prefix="/notes",tags=["Заметки"])
 
+router = APIRouter(prefix="/notes", tags=["Заметки"])
 
 
 @router.get("", response_model=list[Note])
 async def get_notes(
-        pagination:PaginationDep,
-        db: DBDep,
-        user_id: UserIdDep,
-        filters: GetNotesFiltered = Depends(),
+    pagination: PaginationDep,
+    db: DBDep,
+    user_id: UserIdDep,
+    filters: GetNotesFiltered = Depends(),
 ):
     per_page = pagination.per_page or 5
-    res = await db.notes.get_all(
+    return await db.notes.get_all(
         owner_id=user_id,
         **filters.model_dump(exclude_none=True),
         limit=per_page,
-        offset=per_page*(pagination.page-1),
+        offset=per_page * (pagination.page - 1),
     )
-    return res
-
 
 
 @router.post("", response_model=Note)
 async def post_notes(
-        user_id: UserIdDep,
-        db: DBDep,
-        params: CreateNote,
+    user_id: UserIdDep,
+    db: DBDep,
+    params: CreateNote,
 ):
-    res = await db.notes.add(
+    if params.folder_id is not None:
+        folder = await db.folders.get_one_or_none(
+            id=params.folder_id,
+            owner_id=user_id,
+        )
+        if not folder:
+            raise HTTPException(status_code=404, detail="Папка не найдена или нет доступа")
+
+    note = await db.notes.add(
         CreateNoteDB(
             **params.model_dump(),
             owner_id=user_id,
         )
     )
     await db.commit()
-    return res
-
+    return note
 
 
 @router.patch("/{note_id}")
-async def put_note(
-        note_id: int,
-        user_id: UserIdDep,
-        db: DBDep,
-        params: PatchNote,
+async def patch_note(
+    note_id: int,
+    user_id: UserIdDep,
+    db: DBDep,
+    params: PatchNote,
 ):
     if not params.model_dump(exclude_unset=True):
         raise HTTPException(status_code=400, detail="Нет данных для обновления")
@@ -59,26 +62,28 @@ async def put_note(
         if not folder:
             raise HTTPException(status_code=404, detail="Папка не найдена или нет доступа")
 
-    res = await db.notes.edit(
+    updated_count = await db.notes.edit(
         data=params,
         exclude_unset=True,
         id=note_id,
         owner_id=user_id,
     )
-    if res == 0:
+    if updated_count == 0:
         raise HTTPException(status_code=404, detail="Заметка не найдена или нет доступа")
+
     await db.commit()
     return {"status": "updated"}
 
 
 @router.delete("/{note_id}")
 async def delete_note(
-        note_id: int,
-        user_id: UserIdDep,
-        db: DBDep,
+    note_id: int,
+    user_id: UserIdDep,
+    db: DBDep,
 ):
-    res = await db.notes.delete(id=note_id, owner_id=user_id)
-    if res == 0:
-        raise HTTPException(status_code=404,detail="Заметка не найдена или нет доступа")
+    deleted_count = await db.notes.delete(id=note_id, owner_id=user_id)
+    if deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Заметка не найдена или нет доступа")
+
     await db.commit()
     return {"status": "deleted"}

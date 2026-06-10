@@ -1,35 +1,34 @@
 from typing import Annotated
 
-from fastapi import Depends, Query,Request,HTTPException
+from fastapi import Depends, HTTPException, Query, Request
 from pydantic import BaseModel
 
 from src.db import async_session_maker
 from src.services.auth import AuthService
-
 from src.utils.db_manager import DBManager
 
 
 class Pagination(BaseModel):
-    page: Annotated[int | None, Query(1, ge=1)]
-    per_page: Annotated[int | None, Query(None, ge=1, lt=30)]
+    page: Annotated[int, Query(ge=1)] = 1
+    per_page: Annotated[int | None, Query(ge=1, le=100)] = None
 
 
 PaginationDep = Annotated[Pagination, Depends()]
 
 
 def get_token(request: Request) -> str:
-    token = request.cookies.get("access_token",None)
+    token = request.cookies.get("access_token")
     if not token:
         raise HTTPException(status_code=401, detail="Вы не предоставили токен доступа")
     return token
 
 
-def get_curr_user_id(token:str = Depends(get_token)) -> int:
+def get_curr_user_id(token: str = Depends(get_token)) -> int:
     data = AuthService().decode_token(token)
     return data["user_id"]
 
-UserIdDep = Annotated[int,Depends(get_curr_user_id)]
 
+UserIdDep = Annotated[int, Depends(get_curr_user_id)]
 
 
 async def get_db():
@@ -37,4 +36,4 @@ async def get_db():
         yield db
 
 
-DBDep = Annotated[DBManager,Depends(get_db)]
+DBDep = Annotated[DBManager, Depends(get_db)]

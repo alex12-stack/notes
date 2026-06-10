@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-head">
+    <div>
+        <h1>Папки</h1>
+        <p class="muted">Группируй заметки по папкам.</p>
+    </div>
+    <a class="button secondary" href="/app/notes">К заметкам</a>
+</section>
+
+<section class="panel">
+    <h2>Новая папка</h2>
+
+    <form id="folder-form" class="form inline-form">
+        <label>
+            Название
+            <input name="name" type="text" maxlength="30" required>
+        </label>
+        <button type="submit" class="button">Добавить</button>
+    </form>
+</section>
+
+<section id="folders-list" class="cards"></section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', path='js/folders.js') }}?v=3"></script>
+{% endblock %}

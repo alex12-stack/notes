@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="auth-card">
+    <h1>Вход</h1>
+    <p class="muted">Войди в аккаунт, чтобы открыть свои заметки.</p>
+
+    <form id="login-form" class="form">
+        <label>
+            Email
+            <input
+                name="email"
+                type="email"
+                maxlength="50"
+                autocomplete="email"
+                required
+            >
+        </label>
+
+        <label>
+            Пароль
+            <input
+                name="password"
+                type="password"
+                minlength="4"
+                maxlength="100"
+                autocomplete="current-password"
+                required
+            >
+        </label>
+
+        <button type="submit" class="button">Войти</button>
+    </form>
+
+    <p class="muted center auth-switch">
+        Нет аккаунта? <a href="/app/register">Зарегистрироваться</a>
+    </p>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', path='js/auth.js') }}?v=3"></script>
+{% endblock %}

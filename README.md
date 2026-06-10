@@ -1,60 +1,171 @@
-# 📝 Notes API
+# Notes App
 
-**Notes API** — backend-приложение для работы с заметками, пользователями и доступами к заметкам.
+Веб-приложение для создания и организации заметок. Пользователь может зарегистрироваться, войти в аккаунт, создавать заметки, распределять их по папкам, редактировать и удалять данные.
 
-Проект реализован на **FastAPI** с использованием **PostgreSQL**, **SQLAlchemy**, **Alembic**, **JWT-аутентификации** и тестов на **pytest**.
+Репозиторий проекта: https://github.com/alex12-stack/notes
 
----
+## Возможности
 
-## 🚀 Стек технологий
+* регистрация и авторизация пользователей;
+* хранение авторизации в cookie;
+* создание, редактирование и удаление заметок;
+* создание, переименование и удаление папок;
+* перенос заметок в категорию «Без папки» при удалении папки;
+* разграничение доступа между пользователями;
+* поиск заметок;
+* HTML-интерфейс на Jinja2;
+* документация API через Swagger;
+* запуск приложения через Docker Compose.
 
-- **Python 3**
-- **FastAPI**
-- **PostgreSQL**
-- **SQLAlchemy**
-- **Alembic**
-- **Pydantic**
-- **JWT**
-- **Pytest**
-- **Docker / Docker Compose**
-- **Redis / Celery**
-- **Git / GitHub**
-- **Ruff / Pyright**
-- **Logging**
+## Технологический стек
 
----
+* Python;
+* FastAPI;
+* Jinja2;
+* PostgreSQL;
+* SQLAlchemy;
+* Alembic;
+* Redis;
+* Docker;
+* Docker Compose;
+* Pytest.
 
-## ⚙️ Возможности проекта
+## Запуск через Docker Compose
 
-- Регистрация и авторизация пользователей
-- JWT-аутентификация
-- CRUD-операции для заметок
-- Управление доступами к заметкам
-- Работа с PostgreSQL через SQLAlchemy ORM
-- Миграции базы данных через Alembic
-- Валидация данных через Pydantic-схемы
-- Тестирование ключевых сценариев через pytest
-- Автоматическая Swagger/OpenAPI-документация
-- Разделение проекта на слои: routers, schemas, models, services, repositories
-- Логирование ошибок и ключевых операций
-- Подготовка проекта к запуску через Docker Compose
+Для запуска нужен установленный и запущенный Docker Desktop.
 
----
+Склонируйте репозиторий:
 
-## 🗂 Архитектура проекта
+```bash
+git clone https://github.com/alex12-stack/notes.git
+cd notes
+```
+
+Запустите проект:
+
+```bash
+docker compose up --build
+```
+
+При первом запуске Docker автоматически:
+
+1. скачает образы PostgreSQL и Redis;
+2. соберёт контейнер FastAPI-приложения;
+3. создаст базу данных;
+4. применит миграции Alembic;
+5. запустит сервер.
+
+После запуска приложение будет доступно по адресу:
 
 ```text
-src/
-├── api/                 # API-роутеры
-├── core/                # Конфигурация приложения
-├── models/              # SQLAlchemy-модели
-├── schemas/             # Pydantic-схемы
-├── services/            # Бизнес-логика
-├── repositories/        # Работа с базой данных
-├── migrations/          # Alembic-миграции
-└── main.py              # Точка входа приложения
+http://127.0.0.1:8000
+```
 
-tests/                   # Тесты
-alembic.ini              # Конфигурация Alembic
-requirements.txt         # Зависимости проекта
-README.md                # Описание проекта
+Документация API Swagger:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+## Остановка приложения
+
+Остановите выполнение сочетанием клавиш:
+
+```text
+Control + C
+```
+
+Затем выполните:
+
+```bash
+docker compose down
+```
+
+Данные PostgreSQL сохранятся между перезапусками в Docker volume.
+
+Чтобы удалить контейнеры вместе с данными базы:
+
+```bash
+docker compose down -v
+```
+
+## Переменные окружения
+
+Для стандартного локального запуска файл `.env` не обязателен: Docker Compose использует значения по умолчанию.
+
+При необходимости настройки можно переопределить. Создайте `.env` на основе примера:
+
+```bash
+cp .env.example .env
+```
+
+Файл `.env` не должен попадать в публичный репозиторий.
+
+## Запуск без Docker
+
+Для ручного запуска необходимо самостоятельно установить и запустить PostgreSQL и Redis.
+
+Создайте виртуальное окружение:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Установите зависимости:
+
+```bash
+pip install -r requirements.txt
+```
+
+Создайте `.env`:
+
+```bash
+cp .env.example .env
+```
+
+При необходимости измените значения подключения к PostgreSQL и Redis.
+
+Примените миграции:
+
+```bash
+alembic upgrade head
+```
+
+Запустите сервер:
+
+```bash
+python -m uvicorn src.main:app --reload
+```
+
+## Основные страницы
+
+```text
+http://127.0.0.1:8000/app/login
+http://127.0.0.1:8000/app/register
+http://127.0.0.1:8000/app/notes
+http://127.0.0.1:8000/app/folders
+```
+
+## Структура проекта
+
+```text
+notes/
+├── src/
+│   ├── api/                 # API-ручки
+│   ├── connectors/          # подключение к Redis
+│   ├── migrations/          # миграции Alembic
+│   ├── models/              # ORM-модели
+│   ├── repositories/        # работа с базой данных
+│   ├── schemas/             # Pydantic-схемы
+│   ├── static/              # CSS и JavaScript
+│   ├── templates/           # Jinja2-шаблоны
+│   ├── main.py              # точка входа FastAPI
+│   └── pages.py             # HTML-страницы
+├── tests/                   # тесты
+├── Dockerfile
+├── docker-compose.yml
+├── entrypoint.sh
+├── requirements.txt
+└── README.md
+```

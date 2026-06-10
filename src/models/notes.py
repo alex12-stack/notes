@@ -17,8 +17,8 @@ class NotesOrm(Base):
     content:Mapped[str] = mapped_column(Text)
     is_public:Mapped[bool] = mapped_column(default=False)
     owner_id:Mapped[int] = mapped_column(ForeignKey("Users.id"))
-    folder_id:Mapped[int | None] = mapped_column(
-        ForeignKey("Folders.id"),
+    folder_id: Mapped[int | None] = mapped_column(
+        ForeignKey("Folders.id", ondelete="SET NULL"),
         nullable=True,
     )
 
